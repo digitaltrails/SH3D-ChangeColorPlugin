@@ -101,8 +101,10 @@ public class ColorChangePanel extends JPanel {
 
 					if (toColor != null) {
 
-						final Integer from = ColorChanger.colorNoAlpha(fromColor.getRGB());
-						final Integer to = ColorChanger.colorNoAlpha(toColor.getRGB());
+						//final Integer from = ColorChanger.colorNoAlpha(fromColor.getRGB());
+						//final Integer to = ColorChanger.colorNoAlpha(toColor.getRGB());
+						final Integer from = fromColor.getRGB();
+						final Integer to = toColor.getRGB();
 
 						// Show all textures used by all furniture in use.
 						

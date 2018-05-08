@@ -158,7 +158,7 @@ public class ColorChanger {
 		if (materials != null) {
 			for (int i = 0; i < materials.length; i++) {
 				if (materials[i] != null) {
-					if (materials[i].getColor() != null) {
+					if (materials[i].getColor() != null && materials[i].getTexture() == null) {
 						addIfNotNull(piece.getName() + "." + materials[i].getName()  ,materials[i].getColor(), result, index);
 					}
 				}
@@ -166,8 +166,8 @@ public class ColorChanger {
 		}
 		if (defaultMaterials != null) {
 			for (int i = 0; i < defaultMaterials.length; i++) {
-				if (materials == null || materials[i] == null || (materials[i].getTexture() == null && materials[i].getColor() == null)) {
-					if (defaultMaterials[i] != null && defaultMaterials[i].getColor() != null) {
+				if (materials == null || i >= materials.length || materials[i] == null || (materials[i].getTexture() == null && materials[i].getColor() == null)) {
+					if (defaultMaterials[i] != null && defaultMaterials[i].getColor() != null && defaultMaterials[i].getTexture() == null) {
 						addIfNotNull(piece.getName() + "." + defaultMaterials[i].getName(), defaultMaterials[i].getColor(), result, index);
 					}
 				}
@@ -192,10 +192,12 @@ public class ColorChanger {
 				count += changeMaterialColors(piece, from, to, undoableEdit);
 			}
 
-			if (sameColor(piece.getColor(), from)) {
-				piece.setColor(copyAlpha(piece.getColor(), to));
-				undoableEdit.addFurniture(piece);
-				count++;
+			if (piece.getTexture() == null) {
+				if (sameColor(piece.getColor(), from)) {
+					piece.setColor(copyAlpha(piece.getColor(), to));
+					undoableEdit.addFurniture(piece);
+					count++;
+				}
 			}
 
 		}
@@ -216,7 +218,7 @@ public class ColorChanger {
 		for (int i = 0; i < newMaterials.length; i++) {
 
 			if (oldMaterials != null && oldMaterials[i] != null) {
-				if (sameColor(oldMaterials[i].getColor(), from)) {
+				if (oldMaterials[i].getTexture() == null && sameColor(oldMaterials[i].getColor(), from)) {
 					final HomeMaterial oldMaterial = oldMaterials[i];;	
 					final Float newShininess = shininess  != null ? shininess : oldMaterial.getShininess();
 					newMaterials[i] = new HomeMaterial(oldMaterial.getName(), copyAlpha(oldMaterial.getColor(), to), oldMaterial.getTexture(), newShininess);
@@ -226,12 +228,10 @@ public class ColorChanger {
 					newMaterials[i] = oldMaterials[i];
 				}
 			}
-			else if (defaultMaterials != null && defaultMaterials[i] != null && sameColor(defaultMaterials[i].getColor(), from)) {
-				if (oldMaterials == null || oldMaterials[i] == null || (oldMaterials[i].getTexture() == null && oldMaterials[i].getColor() == null)) {
-					HomeMaterial defaultMaterial = defaultMaterials[i];
-					newMaterials[i] = new HomeMaterial(defaultMaterial.getName(), copyAlpha(defaultMaterial.getColor(), to), defaultMaterial.getTexture(), defaultMaterial.getShininess());
-					changedCount++;
-				}
+			else if (defaultMaterials != null && defaultMaterials[i] != null && defaultMaterials[i].getTexture() == null && sameColor(defaultMaterials[i].getColor(), from)) {
+				HomeMaterial defaultMaterial = defaultMaterials[i];
+				newMaterials[i] = new HomeMaterial(defaultMaterial.getName(), copyAlpha(defaultMaterial.getColor(), to), defaultMaterial.getTexture(), defaultMaterial.getShininess());
+				changedCount++;
 			}
 
 		}
@@ -250,12 +250,13 @@ public class ColorChanger {
 	}
 
 	private int copyAlpha(final int from, final int to) {
-		// Alpha's don't seem to contribute anything?
-		return to;
-		//		if ((to & 0xFF000000) != 0xFF000000) {
-		//			return to;
-		//		}
-		//		return (from & 0xFF000000) | (to & 0x00FFFFFF);
+		// If "to" has a non-default alpha, use it as the final alpha
+		// If from and to are same - set alpha to the alpha of the to (fix plugin issue with v5.2 invisible furniture).
+		if ((to & 0xFF000000) != 0xFF000000 || colorNoAlpha(from) == colorNoAlpha(to)) {
+			return to;
+		}
+		// Otherwise preserve the "from"'s original alpha 
+		return (from & 0xFF000000) | (to & 0x00FFFFFF);
 	}
 	
 	public final static class UndoRedoColorChange extends AbstractUndoableEdit {
