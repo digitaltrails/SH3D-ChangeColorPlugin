@@ -1,6 +1,6 @@
 # SH3D-ChangeColorPlugin
 
-## ChangeColorPlugin - find all items using a color and change it
+## ChangeColorPlugin for SweetHome3D - find color usages and change them
 
 This SweetHome3D-plugin provides a dialog with two standard Java Swing color choosers for selecting a from-color and a to-color. 
 The plugin tracks down and changes colors for walls, floors, and furnature. 
