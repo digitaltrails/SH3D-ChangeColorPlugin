@@ -31,7 +31,7 @@ public class ChangeColorAction extends PluginAction {
 	public ChangeColorAction(ChangeColorPlugin context) {
 		this.context = context;
 		putPropertyValue(Property.NAME, Local.str("ChangeColorAction.pluginName"));
-		putPropertyValue(Property.MENU, "Tools");
+		putPropertyValue(Property.MENU, Local.str("ChangeColorAction.targetMenu"));
 		setEnabled(true);
 	}
 
