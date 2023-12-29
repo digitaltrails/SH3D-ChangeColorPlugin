@@ -9,7 +9,7 @@ Each color in-use swatch includes a hover tooltip that lists where the color is 
 
 ### UI Screenshot
 
-![screenshot](/screenshot.png?raw=true "ChangeColorPluin UI")
+![screenshot](/screenshot.png?raw=true "ChangeColorPlugin UI")
 
 
 ## Requirements:
